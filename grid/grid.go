@@ -9,6 +9,8 @@ type grid struct {
 
 type Grid interface {
 	Mark(pos *Position) (res TurnResult)
+	Size() int
+	GetMat() [][]string
 }
 
 func NewGrid(size int) Grid {
@@ -26,6 +28,14 @@ func NewGrid(size int) Grid {
 	}
 
 	return g
+}
+
+func (g *grid) GetMat() [][]string {
+	return g.mat
+}
+
+func (g *grid) Size() int {
+	return gridSize
 }
 
 func (g *grid) Mark(pos *Position) (res TurnResult) {
@@ -49,32 +59,55 @@ func (g *grid) Mark(pos *Position) (res TurnResult) {
 }
 
 func (g *grid) checkMove(lastPos *Position) (res TurnResult) {
+	var (
+		horizontal = true
+		vertical   = true
+		rDiagonal  = true
+		lDiagonal  = true
+	)
+
 	// Horizontal
 	for i := 0; i < gridSize; i++ {
 		if g.mat[lastPos.X][i] != g.mat[lastPos.X][lastPos.Y] {
-			return HorizontalWin
+			horizontal = false
+			break
 		}
+	}
+	if horizontal {
+		return HorizontalWin
 	}
 
 	// Vertical
 	for i := 0; i < gridSize; i++ {
 		if g.mat[i][lastPos.Y] != g.mat[lastPos.X][lastPos.Y] {
-			return VerticalWin
+			vertical = false
+			break
 		}
 	}
-
-	// Right Diagonal
-	for i := 0; i < gridSize; i++ {
-		if g.mat[i][i] != g.mat[lastPos.X][lastPos.Y] {
-			return RDiagonalWin
-		}
+	if vertical {
+		return VerticalWin
 	}
 
 	// Left Diagonal
 	for i := 0; i < gridSize; i++ {
-		if g.mat[i][gridSize-i-1] != g.mat[lastPos.X][lastPos.Y] {
-			return LDiagonalWin
+		if g.mat[i][i] != g.mat[lastPos.X][lastPos.Y] {
+			lDiagonal = false
+			break
 		}
+	}
+	if lDiagonal {
+		return LDiagonalWin
+	}
+
+	// Right Diagonal
+	for i := 0; i < gridSize; i++ {
+		if g.mat[i][gridSize-i-1] != g.mat[lastPos.X][lastPos.Y] {
+			rDiagonal = false
+			break
+		}
+	}
+	if rDiagonal {
+		return RDiagonalWin
 	}
 
 	return ValidMove

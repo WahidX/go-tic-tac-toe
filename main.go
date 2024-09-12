@@ -1,41 +1,54 @@
 package main
 
 import (
-	"fmt"
+	"go-snake/grid"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
-var data = [][]string{
-	{"x", "x", "x"},
-	{"x", "x", "x"},
-	{"x", "x", "x"},
-}
+var playgrid = grid.NewGrid(3)
 
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Table Widget")
 
-	list := widget.NewTable(
+	gameRunning := true
+
+	label := widget.NewLabel("Tic Tac Toe")
+
+	table := widget.NewTable(
 		func() (int, int) {
-			return len(data), len(data[0])
+			return playgrid.Size(), playgrid.Size()
 		},
 		func() fyne.CanvasObject {
-			return widget.NewButton("wide content", func() {
-				fmt.Println("tapped")
-			})
+			btn := widget.NewButton(" ", func() {})
+			btn.Resize(fyne.NewSize(200, 200))
+			return btn
 		},
 		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Button).SetText(data[i.Row][i.Col])
 			o.(*widget.Button).OnTapped = func() {
-				fmt.Println("tapped", i)
+				if !gameRunning {
+					return
+				}
 
-				o.(*widget.Button).SetText("tapped")
+				res := playgrid.Mark(&grid.Position{X: i.Row, Y: i.Col})
+				o.(*widget.Button).SetText(playgrid.GetMat()[i.Row][i.Col])
+
+				if res.IsWin() {
+					label.SetText("!! Victory !!")
+					gameRunning = false
+					return
+				}
 			}
 		})
 
-	myWindow.SetContent(list)
+	appLayout := container.New(layout.NewGridLayoutWithRows(2), label, table)
+
+	myWindow.SetContent(appLayout)
+	myWindow.Resize(fyne.NewSize(300, 300))
 	myWindow.ShowAndRun()
 }
