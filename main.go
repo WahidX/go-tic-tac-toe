@@ -25,8 +25,7 @@ func main() {
 			return playgrid.Size(), playgrid.Size()
 		},
 		func() fyne.CanvasObject {
-			btn := widget.NewButton(" ", func() {})
-			btn.Resize(fyne.NewSize(200, 200))
+			btn := widget.NewButton("            ", func() {})
 			return btn
 		},
 		func(i widget.TableCellID, o fyne.CanvasObject) {
@@ -40,15 +39,16 @@ func main() {
 
 				if res.IsWin() {
 					label.SetText("!! Victory !!")
+
 					gameRunning = false
 					return
 				}
 			}
 		})
 
-	appLayout := container.New(layout.NewGridLayoutWithRows(2), label, table)
+	appLayout := container.New(layout.NewGridLayout(1), label, table)
 
 	myWindow.SetContent(appLayout)
-	myWindow.Resize(fyne.NewSize(300, 300))
+	myWindow.Resize(fyne.NewSize(200, 250))
 	myWindow.ShowAndRun()
 }
