@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-snake/grid"
+	"go-tic-tac-toe/grid"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"

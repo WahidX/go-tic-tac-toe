@@ -1,4 +1,4 @@
-module go-snake
+module go-tic-tac-toe
 
 go 1.23.0
 
