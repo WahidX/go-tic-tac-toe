@@ -42,6 +42,11 @@ func main() {
 
 					gameRunning = false
 					return
+				} else if res == grid.Draw {
+					label.SetText("!! Draw !!")
+
+					gameRunning = false
+					return
 				}
 			}
 		})

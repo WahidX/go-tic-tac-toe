@@ -5,12 +5,14 @@ var gridSize = 3 // default
 type grid struct {
 	mat   [][]string
 	nextX bool
+	count int
 }
 
 type Grid interface {
 	Mark(pos *Position) (res TurnResult)
 	Size() int
 	GetMat() [][]string
+	Reset()
 }
 
 func NewGrid(size int) Grid {
@@ -28,6 +30,17 @@ func NewGrid(size int) Grid {
 	}
 
 	return g
+}
+
+func (g *grid) Reset() {
+	for i := range g.mat {
+		for j := range g.mat[i] {
+			g.mat[i][j] = ""
+		}
+	}
+
+	g.nextX = true
+	g.count = 0
 }
 
 func (g *grid) GetMat() [][]string {
@@ -55,7 +68,15 @@ func (g *grid) Mark(pos *Position) (res TurnResult) {
 
 	g.nextX = !g.nextX
 
-	return g.checkMove(pos)
+	res = g.checkMove(pos)
+	if !res.IsWin() {
+		g.count++
+		if g.count == gridSize*gridSize {
+			return Draw
+		}
+	}
+
+	return res
 }
 
 func (g *grid) checkMove(lastPos *Position) (res TurnResult) {

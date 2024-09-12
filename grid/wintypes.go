@@ -9,6 +9,7 @@ const (
 	LDiagonalWin  TurnResult = "Left Diagonal Win"
 	InvalidMove   TurnResult = "Invalid Move"
 	ValidMove     TurnResult = "Valid Move"
+	Draw          TurnResult = "Draw"
 )
 
 func (r TurnResult) IsWin() bool {
