@@ -19,39 +19,57 @@ func main() {
 	gameRunning := true
 
 	label := widget.NewLabel("Tic Tac Toe")
+	var resetBtn fyne.CanvasObject
 
-	table := widget.NewTable(
-		func() (int, int) {
-			return playgrid.Size(), playgrid.Size()
-		},
-		func() fyne.CanvasObject {
-			btn := widget.NewButton("            ", func() {})
-			return btn
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Button).OnTapped = func() {
-				if !gameRunning {
-					return
+	getTable := func(playgrid grid.Grid) *widget.Table {
+		return widget.NewTable(
+			func() (int, int) {
+				return playgrid.Size(), playgrid.Size()
+			},
+			func() fyne.CanvasObject {
+				btn := widget.NewButton("            ", func() {})
+				return btn
+			},
+			func(i widget.TableCellID, o fyne.CanvasObject) {
+				o.(*widget.Button).OnTapped = func() {
+					if !gameRunning {
+						return
+					}
+
+					res := playgrid.Mark(&grid.Position{X: i.Row, Y: i.Col})
+					o.(*widget.Button).SetText(playgrid.GetMat()[i.Row][i.Col])
+
+					if res.IsWin() {
+						label.SetText("!! Victory !!")
+						gameRunning = false
+
+						resetBtn.Show()
+					} else if res == grid.Draw {
+						label.SetText("!! Draw !!")
+						gameRunning = false
+
+						resetBtn.Show()
+					}
 				}
+			})
+	}
 
-				res := playgrid.Mark(&grid.Position{X: i.Row, Y: i.Col})
-				o.(*widget.Button).SetText(playgrid.GetMat()[i.Row][i.Col])
+	table := getTable(playgrid)
+	var appLayout *fyne.Container
 
-				if res.IsWin() {
-					label.SetText("!! Victory !!")
+	resetBtn = widget.NewButton("Reset", func() {
+		playgrid.Reset()
+		table = getTable(playgrid)
+		appLayout.Objects[1] = table
 
-					gameRunning = false
-					return
-				} else if res == grid.Draw {
-					label.SetText("!! Draw !!")
+		gameRunning = true
+		label.SetText("Tic Tac Toe")
+		resetBtn.Hide()
+	})
+	resetBtn.Hide()
 
-					gameRunning = false
-					return
-				}
-			}
-		})
-
-	appLayout := container.New(layout.NewGridLayout(1), label, table)
+	header := container.New(layout.NewGridLayout(2), label, resetBtn)
+	appLayout = container.New(layout.NewGridLayout(1), header, table)
 
 	myWindow.SetContent(appLayout)
 	myWindow.Resize(fyne.NewSize(200, 250))
